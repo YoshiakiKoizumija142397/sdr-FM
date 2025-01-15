@@ -1,0 +1,28 @@
+import kotlin.math.*
+
+// サンプルレートと周期
+val sampleRate = 1000.0
+val duration = 2.0
+val frequency = 5.0
+
+fun main() {
+    // シンセサイズされたFM信号
+    val fmSignal = generateFMSignal()
+
+    // FM復調
+    val demodulatedSignal = demodulateFMSignal(fmSignal)
+
+    // 結果を出力
+    println("FMシグナル: ${fmSignal.joinToString(", ")}")
+    println("復調後のシグナル: ${demodulatedSignal.joinToString(", ")}")
+}
+
+fun generateFMSignal(): List<Double> {
+    val time = List((sampleRate * duration).toInt()) { it / sampleRate }
+    return time.map { sin(2 * PI * frequency * it) }
+}
+
+fun demodulateFMSignal(fmSignal: List<Double>): List<Double> {
+    val differentiated = fmSignal.zipWithNext { a, b -> (b - a) * sampleRate }
+    return differentiated.map { abs(it) }
+}
